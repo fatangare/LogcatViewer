@@ -17,6 +17,7 @@ Moreever, if correct tags are used, it can also be useful for performance measur
 *That's all!*  
   
 It will launch floating window which will show logcat logs of the application.   
+![mainview](https://github.com/fatangare/LogcatViewer/Images/mainview.png)  
 Since it is floating window, user can play around with the application while viewing logcat logs.  
 
 ## Operations which can be done in LogcatViewer:
@@ -26,4 +27,6 @@ Since it is floating window, user can play around with the application while vie
 4. Stop Recording - Stop storing logcat logs in file.
 5. Enter filter text - Filter logs by filter text. It can be tag, package name or some text.
 6. Select log level - Filter logs by log level.
-7. Reset - Show all logcat logs.            
+7. Reset - Show all logcat logs.      
+
+       
