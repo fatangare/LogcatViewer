@@ -34,5 +34,5 @@ Since it is floating window, user can play around with the application while vie
 ![filter](https://github.com/fatangare/LogcatViewer/blob/master/Images/filter.png)   
 ###### Select log level
 ![loglevel](https://github.com/fatangare/LogcatViewer/blob/master/Images/loglevel.png)  
-#### Notification
+###### Notification
 ![loglevel](https://github.com/fatangare/LogcatViewer/blob/master/Images/notification.png)    

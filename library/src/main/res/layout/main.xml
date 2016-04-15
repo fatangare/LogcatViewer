@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/**
+ * Copyright (C) 2016  Sandeep Fatangare <sandeep@fatangare.info>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+-->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+	android:background="@android:color/holo_green_dark"
+    >
+    
+    <ListView xmlns:android="http://schemas.android.com/apk/res/android"
+		android:id="@+id/list"
+	    android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/menuOptionsLayout"
+		android:background="@android:color/background_dark"
+		android:divider="@android:color/holo_green_dark"
+		android:dividerHeight="1dp"
+		android:scrollbarSize="4dp"
+        android:fastScrollStyle="@android:color/holo_green_dark"
+        android:fastScrollEnabled="true"
+        android:fastScrollAlwaysVisible="true"/>
+
+    <LinearLayout
+        android:id="@+id/menuOptionsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/bottombar"
+        android:background="@android:color/background_dark"
+        android:orientation="vertical"
+        android:visibility="visible"
+        android:padding="4dp">
+
+        <LinearLayout
+            android:id="@+id/filterLayout"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:visibility="gone"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight=".3"
+                android:text="Enter Log Filter:"
+                android:paddingLeft="10dp"
+                android:gravity="center_vertical"
+                android:textColor="@android:color/black"
+                android:background="@android:color/holo_green_dark"/>
+            <EditText
+                android:id="@+id/etLogFilter"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight=".4"
+                android:textSize="20sp"
+                android:textColor="@android:color/holo_green_dark"
+                android:focusable="true"
+                android:maxLines="1"
+                />
+            <Button
+                android:id="@+id/btnLogFilter"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:text="OK"
+                android:layout_weight=".3"
+                android:background="@android:color/holo_green_dark"
+                android:textColor="@android:color/black"/>
+            </LinearLayout>
+
+        <RadioGroup
+            android:id="@+id/rgPriorityLevels"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:orientation="vertical">
+            <RadioButton android:id="@+id/radioVerbose"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Verbose (show all)"
+                android:textColor="@android:color/holo_green_dark"
+                android:padding="3dp"/>
+            <RadioButton android:id="@+id/radioDebug"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Debug"
+                android:textColor="@android:color/holo_green_dark"
+                android:padding="3dp"/>
+            <RadioButton android:id="@+id/radioInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Info"
+                android:textColor="@android:color/holo_green_dark"
+                android:padding="3dp"/>
+            <RadioButton android:id="@+id/radioWarning"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Warning"
+                android:textColor="@android:color/holo_green_dark"
+                android:padding="3dp"/>
+            <RadioButton android:id="@+id/radioError"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Error"
+                android:textColor="@android:color/holo_green_dark"
+                android:padding="3dp"/>
+        </RadioGroup>
+        </LinearLayout>
+    <LinearLayout
+		android:id="@+id/bottombar"
+		android:layout_width="match_parent"
+		android:layout_height="30dp"
+		android:layout_alignParentBottom="true"
+		android:background="@android:color/darker_gray"
+		android:gravity="center_vertical"
+		android:orientation="horizontal"
+		android:padding="4dp">
+
+		<ImageView
+			android:id="@+id/pause"
+			android:layout_width="22dp"
+			android:layout_height="22dp"
+			android:layout_marginRight="10dp"
+			android:background="@drawable/pause" />
+
+		<ImageView
+			android:id="@+id/play"
+			android:layout_width="22dp"
+			android:layout_height="22dp"
+			android:layout_marginRight="10dp"
+			android:background="@drawable/play"
+			android:visibility="gone"
+			/>
+
+		<ImageView
+			android:id="@+id/record"
+			android:layout_width="22dp"
+			android:layout_height="22dp"
+			android:layout_marginRight="10dp"
+			android:background="@drawable/record" />
+
+		<ImageView
+			android:id="@+id/recordOn"
+			android:layout_width="22dp"
+			android:layout_height="22dp"
+			android:layout_marginRight="10dp"
+			android:background="@drawable/recordon"
+			android:visibility="gone"
+			/>
+
+		<ImageView
+			android:id="@+id/find"
+			android:layout_width="22dp"
+			android:layout_height="22dp"
+			android:layout_marginRight="10dp"
+			android:background="@drawable/find"
+			/>
+
+		<ImageView
+			android:id="@+id/btnPriorityLevel"
+			android:layout_width="22dp"
+			android:layout_height="22dp"
+			android:layout_marginRight="10dp"
+			android:background="@drawable/prioritylevels"
+			/>
+
+
+        <ImageView
+            android:id="@+id/btnReset"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/reset"
+            />
+	</LinearLayout>
+
+</RelativeLayout>
