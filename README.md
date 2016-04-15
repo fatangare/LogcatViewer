@@ -17,7 +17,7 @@ Moreever, if correct tags are used, it can also be useful for performance measur
 *That's all!*  
   
 It will launch floating window which will show logcat logs of the application.   
-![mainview](https://github.com/fatangare/LogcatViewer/Images/mainview.png)  
+![mainview](https://github.com/fatangare/LogcatViewer/blob/master/Images/mainview.png)  
 Since it is floating window, user can play around with the application while viewing logcat logs.  
 
 ## Operations which can be done in LogcatViewer:
