@@ -29,4 +29,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         LogcatViewer.showLogcatLoggerView(this);
     }
+
+    @Override
+    protected void onDestroy() {
+        LogcatViewer.closeLogcatLoggerView(this);
+        super.onDestroy();
+    }
 }

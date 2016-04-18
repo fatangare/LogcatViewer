@@ -6,13 +6,18 @@ It will be useful for tester to provide logs along with defects and also to deve
 Moreever, if correct tags are used, it can also be useful for performance measurement, for monitoring network requests etc. etc.  
 
 #### How to plug LogcatViewer in your application?
-1. Add following code to launch LogcatViewer floating view.  
+1. Copy logcatviewer and standout folders to your project.
+2. Add following code to launch LogcatViewer floating view. - To launch logcatviewer floating view.
 `LogcatViewer.showLogcatLoggerView(this);`
-2. Add following services to AndroidManifest.xml.  
+3. Add following services to AndroidManifest.xml. - To register services
  `<service android:name="com.fatangare.logcatviewer.service.LogcatViewerService"
             android:label="LogcatLoggerService"></service>
         <service android:name="com.fatangare.logcatviewer.service.LogcatViewerFloatingView"
             android:label="LogcatLoggerFloatingView" > </service>`
+4. Add following code to your project's build.gradle - To add library to build process
+`compile project(':logcatviewer');`
+5.Add following code to your project's settings.gradle - To make logcatviewer and standout as modules in your project.
+`include ':logcatviewer', ':standOut'`
               
 *That's all!*  
   
@@ -24,6 +29,8 @@ Since it is floating window, user can play around with the application while vie
 1. Pause - Pause listening to logcat logs
 2. Resume - Resume listening to logcat logs
 3. Start Recording - Start storing logcat logs in file. File is stored in android.os.Environment.DIRECTORY_DOWNLOADS+ "/LogcatViewer/"+ getPackageName() directory.
+It take filter-text used before recording is started. Any change to filter-text during recording will not update filter-text used for recording.
+To apply new filter-text for recording, new recording should be started.
 4. Stop Recording - Stop storing logcat logs in file.
 5. Enter filter text - Filter logs by filter text. It can be tag, package name or some text.
 6. Select log level - Filter logs by log level.

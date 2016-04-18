@@ -296,8 +296,8 @@ public class LogcatViewerService extends Service {
             //Get log file.
             File logFile = new File(logDir, mRecordingFilename);
 
-            //Get writer to write in log file.
-            FileWriter logFileWriter = new FileWriter(logFile);
+            //Get writer to write in log file. Enable 'Append' mode.
+            FileWriter logFileWriter = new FileWriter(logFile, true);
 
             //Write to log file.
             for (int i = 0; i < size; i++) {

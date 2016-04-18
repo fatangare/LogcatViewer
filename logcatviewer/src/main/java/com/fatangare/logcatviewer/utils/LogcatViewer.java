@@ -36,4 +36,13 @@ public class LogcatViewer {
         StandOutWindow
                 .show(context, LogcatViewerFloatingView.class, StandOutWindow.DEFAULT_ID);
     }
+
+    /**
+     * Close  {@link LogcatViewerFloatingView} view.
+     *
+     * @param context context.
+     */
+    public static void closeLogcatLoggerView(Context context) {
+        StandOutWindow.closeAll(context, LogcatViewerFloatingView.class);
+    }
 }
