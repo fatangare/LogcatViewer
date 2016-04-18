@@ -15,8 +15,8 @@ Moreever, if correct tags are used, it can also be useful for performance measur
         <service android:name="com.fatangare.logcatviewer.service.LogcatViewerFloatingView"
             android:label="LogcatLoggerFloatingView" > </service>`
 4. Add following code to your project's build.gradle - To add library to build process
-`compile project(':logcatviewer');`
-5.Add following code to your project's settings.gradle - To make logcatviewer and standout as modules in your project.
+`compile project(':logcatviewer');`  
+5. Add following code to your project's settings.gradle - To make logcatviewer and standout as modules in your project.
 `include ':logcatviewer', ':standOut'`
               
 *That's all!*  
