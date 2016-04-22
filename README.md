@@ -1,3 +1,5 @@
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-LogcatViewer-green.svg?style=true)](https://android-arsenal.com/details/1/3463)
+
 # LogcatViewer - Android Logcat Viewer
 
 ## Purpose
