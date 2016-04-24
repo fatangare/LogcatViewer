@@ -172,7 +172,7 @@ public class LogcatViewerFloatingView extends StandOutWindow {
 
     @Override
     public String getPersistentNotificationMessage(int id) {
-        return "Show the LogcatViewerFloatingView for "+getAppName()+ " application";
+        return "Show LogcatViewer floating view.";
     }
 
     @Override

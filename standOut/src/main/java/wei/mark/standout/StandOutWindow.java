@@ -527,7 +527,7 @@ public abstract class StandOutWindow extends Service {
 	 * @return The title for the persistent notification.
 	 */
 	public String getPersistentNotificationTitle(int id) {
-		return getAppName() + " Running";
+		return getAppName();
 	}
 
 	/**
@@ -640,8 +640,7 @@ public abstract class StandOutWindow extends Service {
 		long when = System.currentTimeMillis();
 		Context c = getApplicationContext();
 		String contentTitle = getPersistentNotificationTitle(id);
-		String contentText = getPersistentNotificationMessage(id);
-		String tickerText = String.format("%s: %s", contentTitle, contentText);
+		String tickerText = getPersistentNotificationMessage(id);
 
 		// getPersistentNotification() is called for every new window
 		// so we replace the old notification with a new one that has
@@ -1190,7 +1189,7 @@ public abstract class StandOutWindow extends Service {
 			window.visibility = Window.VISIBILITY_TRANSITION;
 
 			// get the hidden notification for this view
-			Notification notification = getHiddenNotification(id);
+//			Notification notification = getHiddenNotification(id);
 
 			// get animation
 			Animation animation = getHideAnimation(id);
@@ -1225,12 +1224,12 @@ public abstract class StandOutWindow extends Service {
 			}
 
 			// display the notification
-			notification.flags = notification.flags
-					| Notification.FLAG_NO_CLEAR
-					| Notification.FLAG_AUTO_CANCEL;
-
-			mNotificationManager.notify(getClass().hashCode() + id,
-					notification);
+//			notification.flags = notification.flags
+//					| Notification.FLAG_NO_CLEAR
+//					| Notification.FLAG_AUTO_CANCEL;
+//
+//			mNotificationManager.notify(getClass().hashCode() + id,
+//					notification);
 
 		} else {
 			// if hide not enabled, close window
