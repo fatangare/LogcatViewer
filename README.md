@@ -9,8 +9,8 @@ Moreever, if correct tags are used, it can also be useful for performance measur
 
 #### How to plug LogcatViewer in your application?
 
-1. Add following line to build.gradle
-`compile 'com.github.fatangare.LogcatViewer:logcatviewer:aadf092447'`
+1. Add following line to build.gradle  
+`dependencies {  compile 'com.github.fatangare.LogcatViewer:logcatviewer:aadf092447'  }`
 2. Add following code to launch LogcatViewer floating view. - To launch logcatviewer floating view.
 `LogcatViewer.showLogcatLoggerView(this);`
 3. Add following services to AndroidManifest.xml. - To register services
@@ -18,11 +18,6 @@ Moreever, if correct tags are used, it can also be useful for performance measur
             android:label="LogcatLoggerService"></service>
         <service android:name="com.fatangare.logcatviewer.service.LogcatViewerFloatingView"
             android:label="LogcatLoggerFloatingView" > </service>`
-4. Add following code to your project's build.gradle - To add library to build process
-`compile project(':logcatviewer');`
-5. Add following code to your project's settings.gradle - To make logcatviewer and standout as modules in your project.  
-`include ':logcatviewer', ':standOut'`
-
 
 *That's all!*  
   
