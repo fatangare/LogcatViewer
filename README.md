@@ -1,4 +1,4 @@
-[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-LogcatViewer-green.svg?style=true)](https://android-arsenal.com/details/1/3463)
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-LogcatViewer-green.svg?style=true)](https://android-arsenal.com/details/1/3463)  [![](https://jitpack.io/v/fatangare/LogcatViewer.svg)](https://jitpack.io/#fatangare/LogcatViewer)
 
 # LogcatViewer - Android Logcat Viewer
 
