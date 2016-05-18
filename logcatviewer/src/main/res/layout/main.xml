@@ -104,7 +104,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/priority_verbose"
                 android:textColor="@android:color/holo_green_dark"
-                android:padding="3dp"/>
+                android:padding="3dp"
+                android:checked="true" />
             <RadioButton android:id="@+id/radioDebug"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

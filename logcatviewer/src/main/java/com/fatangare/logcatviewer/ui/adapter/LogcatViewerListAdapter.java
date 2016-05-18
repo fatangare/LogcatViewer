@@ -269,7 +269,8 @@ public class LogcatViewerListAdapter extends BaseAdapter {
             if (mPriorityLevels[i].equals(mLogPriorityLevel)) {
                 //Check if either current priority level or below it in hierarchy is part of given log-entry.
                 for (int j = i; j < size; j++) {
-                    if (logcatEntry.contains(mPriorityLevels[j])) {
+                    String priorityLevel1 = mPriorityLevels[j].trim() + "/";
+                    if (logcatEntry.contains(mPriorityLevels[j]) || logcatEntry.contains(priorityLevel1)) {
                         return true;
                     }
                 }
