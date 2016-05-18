@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="logfilter_lable">Enter Log Filter:</string>
+    <string name="logfilter_button">OK</string>
+    <string name="priority_verbose">Verbose (show all)</string>
+    <string name="priority_debug">Debug</string>
+    <string name="priority_info">Info</string>
+    <string name="priority_warning">Warning</string>
+    <string name="priority_error">Error</string>
+</resources>

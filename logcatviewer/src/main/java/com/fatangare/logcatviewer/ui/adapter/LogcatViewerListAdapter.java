@@ -178,6 +178,11 @@ public class LogcatViewerListAdapter extends BaseAdapter {
     }
 
     @Override
+    public boolean isEmpty() {
+        return mFilteredLogcatData.size() == 0;
+    }
+
+    @Override
     public View getView(int pos, View convertView, ViewGroup parent) {
         TextView holder;
         String logcatEntry = mFilteredLogcatData.get(pos);
@@ -198,7 +203,7 @@ public class LogcatViewerListAdapter extends BaseAdapter {
         holder.setTextColor(getTextColorForLogcatEntry(logcatEntry));
 
         final boolean autoscroll =
-                (parent.getScrollY() + parent.getHeight() >= parent.getBottom()) ? true : false;
+                (parent.getScrollY() + parent.getHeight() >= parent.getBottom());
 
         if (autoscroll) {
             ((ListView) parent).setSelection(mFilteredLogcatData.size() - 1);
@@ -296,7 +301,8 @@ public class LogcatViewerListAdapter extends BaseAdapter {
 
         //get priority level of log-entry.
         for (String key : mPriorityLevelColorMap.keySet()) {
-            if (logcatEntry.contains(key)) {
+            String key1 = key.trim() + "/";
+            if (logcatEntry.contains(key) || logcatEntry.contains(key1)) {
                 priorityLevel = key;
                 break;
             }

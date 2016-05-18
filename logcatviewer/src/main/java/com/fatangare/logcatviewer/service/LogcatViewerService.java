@@ -19,7 +19,6 @@ package com.fatangare.logcatviewer.service;
 
 import android.app.Service;
 import android.content.Intent;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -90,10 +89,7 @@ public class LogcatViewerService extends Service {
      */
     private static final int LOG_SAVING_INTERVAL = 5000; //5s
 
-    /**
-     * Root Logcat logger directory to save log entries.
-     */
-    private static final String LOG_RECORD_DIR = "/LogcatViewer/";
+
 
     // Handler Messages
 
@@ -290,7 +286,7 @@ public class LogcatViewerService extends Service {
             Vector<String> recordingData = new Vector<>(mRecordingData);
 
             //Get log directory.
-            File logDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS + LOG_RECORD_DIR + getPackageName());
+            File logDir = Constants.getRecordDir(this);
             logDir.mkdirs();
 
             //Get log file.

@@ -21,22 +21,31 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import com.fatangare.logcatviewer.R;
+import com.fatangare.logcatviewer.ui.adapter.LogRecordsListAdapter;
 import com.fatangare.logcatviewer.ui.adapter.LogcatViewerListAdapter;
+
+import java.io.File;
+import java.util.ArrayList;
 
 import wei.mark.standout.StandOutWindow;
 import wei.mark.standout.constants.StandOutFlags;
@@ -55,6 +64,9 @@ public class LogcatViewerFloatingView extends StandOutWindow {
     private LinearLayout mMenuOptionLayout;
     private LinearLayout mFilterLayout;
     private RadioGroup mPriorityLevelRadioGroup;
+    private ListView mRecordsListView;
+    private LinearLayout mNormalBottombarLayout;
+    private LinearLayout mRecordsBottombarLayout;
 
     //Service
     private ILogcatViewerService mLogcatViewerService;
@@ -144,9 +156,19 @@ public class LogcatViewerFloatingView extends StandOutWindow {
         mFilterLayout = (LinearLayout) rootView.findViewById(R.id.filterLayout);
         //Radio group containing different priority levels.
         mPriorityLevelRadioGroup = (RadioGroup) rootView.findViewById(R.id.rgPriorityLevels);
+        //View for showing recorded logs.
+        mRecordsListView = (ListView) mMenuOptionLayout.findViewById(R.id.recordList);
+        mRecordsListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+
+        // Bottombar layouts
+        mNormalBottombarLayout = (LinearLayout) rootView.findViewById(R.id.normalbottombar);
+        mRecordsBottombarLayout = (LinearLayout) rootView.findViewById(R.id.recordsbottombar);
 
         setupLogListView(rootView);
         setupBottomBarView(rootView);
+
+
+        setupRecordListView();
         setupFilterTextView(rootView);
         setupPriorityLevelView();
     }
@@ -220,6 +242,7 @@ public class LogcatViewerFloatingView extends StandOutWindow {
     private void resetMenuOptionLayout() {
         mFilterLayout.setVisibility(View.GONE);
         mPriorityLevelRadioGroup.setVisibility(View.GONE);
+        mRecordsListView.setVisibility(View.GONE);
         mMenuOptionLayout.setVisibility(View.GONE);
     }
 
@@ -290,17 +313,42 @@ public class LogcatViewerFloatingView extends StandOutWindow {
             }
         });
 
+        //'Show Log Records' button
+        rootView.findViewById(R.id.btnRecordList).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int recordsViewVisibility = mRecordsListView.getVisibility();
+                resetMenuOptionLayout();
+                if (recordsViewVisibility == View.GONE) {
+                    if (mRecordsListView.getAdapter() == null) {
+                        mRecordsListView.setAdapter(new LogRecordsListAdapter(getApplicationContext()));
+                    } else {
+                        ((LogRecordsListAdapter) mRecordsListView.getAdapter()).notifyDataSetChanged();
+                }
+
+                    if (!mRecordsListView.getAdapter().isEmpty()) {
+                        mMenuOptionLayout.setVisibility(View.VISIBLE);
+                        mRecordsListView.setVisibility(View.VISIBLE);
+
+                        mNormalBottombarLayout.setVisibility(View.GONE);
+                        mRecordsBottombarLayout.setVisibility(View.VISIBLE);
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Empty Logs directory! Save logs first.", Toast.LENGTH_LONG).show();
+                    }
+            }
+            }
+        });
+
         //'Enter filter text' button
         rootView.findViewById(R.id.find).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mFilterLayout.getVisibility() == View.GONE) {
-                    resetMenuOptionLayout();
+                int filterLayoutVisibility = mFilterLayout.getVisibility();
+                resetMenuOptionLayout();
+                if (filterLayoutVisibility == View.GONE) {
                     mFilterLayout.setVisibility(View.VISIBLE);
                     mMenuOptionLayout.setVisibility(View.VISIBLE);
-                } else {
-                    resetMenuOptionLayout();
-                }
+            }
             }
         });
 
@@ -308,12 +356,12 @@ public class LogcatViewerFloatingView extends StandOutWindow {
         rootView.findViewById(R.id.btnPriorityLevel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mPriorityLevelRadioGroup.getVisibility() == View.GONE) {
-                    resetMenuOptionLayout();
+                int priorityLevelRadioGroupVisibility = mPriorityLevelRadioGroup.getVisibility();
+                resetMenuOptionLayout();
+
+                if (priorityLevelRadioGroupVisibility == View.GONE) {
                     mPriorityLevelRadioGroup.setVisibility(View.VISIBLE);
                     mMenuOptionLayout.setVisibility(View.VISIBLE);
-                } else {
-                    resetMenuOptionLayout();
                 }
             }
         });
@@ -325,10 +373,82 @@ public class LogcatViewerFloatingView extends StandOutWindow {
                 pauseLogging();
                 mAdapter.reset();
                 resumeLogging();
+                resetMenuOptionLayout();
+
             }
         });
     }
 
+    /**
+     * Setup 'Saved Logs' layout.
+     */
+    private void setupRecordListView() {
+        mRecordsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if (mRecordsListView.getCheckedItemPositions().get(i, false)) {
+                    view.setBackgroundColor(Color.LTGRAY);
+                } else {
+                    view.setBackgroundColor(Color.WHITE);
+                }
+            }
+        });
+
+
+        //'Back' button
+        mRecordsBottombarLayout.findViewById(R.id.btnBack).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int cnt = mRecordsListView.getAdapter().getCount();
+
+                for (int index = 0; index < cnt; index++) {
+                    mRecordsListView.setItemChecked(index, false);
+                    getViewByPosition(index, mRecordsListView).setBackgroundColor(Color.WHITE);
+                }
+
+                resetMenuOptionLayout();
+                mNormalBottombarLayout.setVisibility(View.VISIBLE);
+                mRecordsBottombarLayout.setVisibility(View.GONE);
+            }
+        });
+
+        //'Select All' button
+        mRecordsBottombarLayout.findViewById(R.id.btnSelectAll).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                boolean isSelectingAll = mRecordsListView.getCheckedItemCount() != mRecordsListView.getAdapter().getCount();
+                int color = isSelectingAll ? Color.LTGRAY : Color.WHITE;
+                int cnt = mRecordsListView.getAdapter().getCount();
+                for (int index = 0; index < cnt; index++) {
+                    mRecordsListView.setItemChecked(index, isSelectingAll);
+                    getViewByPosition(index, mRecordsListView).setBackgroundColor(color);
+                }
+            }
+        });
+
+
+        //'Delete' button
+        mRecordsBottombarLayout.findViewById(R.id.btnDelete).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                deleteRecordedLogFiles();
+
+                if (mRecordsListView.getCount() == 0) {
+                    resetMenuOptionLayout();
+                    mNormalBottombarLayout.setVisibility(View.VISIBLE);
+                    mRecordsBottombarLayout.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        //'Share' button
+        mRecordsBottombarLayout.findViewById(R.id.btnShare).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                shareRecordedLogFiles();
+            }
+        });
+    }
     /**
      * Setup 'Enter filter text' layout.
      * @param rootView root view.
@@ -380,4 +500,95 @@ public class LogcatViewerFloatingView extends StandOutWindow {
         });
     }
 
+    /**
+     * Share selected 'Saved Logs' files.
+     */
+    private void shareRecordedLogFiles() {
+        //If none is selected, return
+        if (mListView.getCheckedItemCount() == 0) {
+            Toast.makeText(getApplicationContext(), "First select log entry!", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND_MULTIPLE);
+
+        emailIntent.setData(Uri.parse("mailto:"));
+//      emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] { "sandeep@fatangare.info" });
+        emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "[" + getAppName() + "] Logcat Logs");
+        emailIntent.setType("text/plain");
+        emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, "Please find attached logcat logs file.");
+
+        //Loop through selected files and add to uri list.
+        SparseBooleanArray checkedItemPositions = mRecordsListView.getCheckedItemPositions();
+        int cnt = checkedItemPositions.size();
+
+        LogRecordsListAdapter logRecordsListAdapter = (LogRecordsListAdapter) mRecordsListView.getAdapter();
+        ArrayList<Uri> uris = new ArrayList<Uri>();
+        for (int index = 0; index < cnt; index++) {
+            if (checkedItemPositions.valueAt(index)) {
+                File file = (File) logRecordsListAdapter.getItem(checkedItemPositions.keyAt(index));
+                uris.add(Uri.fromFile(file));
+            }
+
+        }
+
+        //add all files to intent data.
+        emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
+
+        //Launching from service so set this flag.
+        emailIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        //Hide floating view; otherwise email client will be shown below it.
+        hide(StandOutWindow.DEFAULT_ID);
+
+        //Launch email client application.
+        startActivity(emailIntent);
+    }
+
+
+    /**
+     * Delete selected 'Saved Logs' files.
+     */
+    private void deleteRecordedLogFiles() {
+        if (mListView.getCheckedItemCount() == 0) {
+            Toast.makeText(getApplicationContext(), "First select log entry!", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        //Loop through selected files and delete them.
+        SparseBooleanArray checkedItemPositions = mRecordsListView.getCheckedItemPositions();
+        int cnt = checkedItemPositions.size();
+
+        LogRecordsListAdapter logRecordsListAdapter = (LogRecordsListAdapter) mRecordsListView.getAdapter();
+        for (int index = 0; index < cnt; index++) {
+            if (checkedItemPositions.valueAt(index)) {
+                File file = (File) logRecordsListAdapter.getItem(checkedItemPositions.keyAt(index));
+                if (file.delete()) {
+                    Toast.makeText(getApplicationContext(), "File " + file.getName() + " deleted!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+
+        //Update list-view.
+        logRecordsListAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Get list item view by position
+     *
+     * @param pos      position of list item.
+     * @param listView listview object.
+     * @return list item view associated with position in the listview.
+     */
+    private View getViewByPosition(int pos, ListView listView) {
+        final int firstListItemPosition = listView.getFirstVisiblePosition();
+        final int lastListItemPosition = firstListItemPosition + listView.getChildCount() - 1;
+
+        if (pos < firstListItemPosition || pos > lastListItemPosition) {
+            return listView.getAdapter().getView(pos, null, listView);
+        } else {
+            final int childIndex = pos - firstListItemPosition;
+            return listView.getChildAt(childIndex);
+        }
+    }
 }
