@@ -18,6 +18,8 @@ android {
     }
     productFlavors {
     }
+    apply plugin: 'com.github.dcendents.android-maven'
+    group='com.github.fraynaud33'
 }
 
 dependencies {
