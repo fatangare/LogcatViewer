@@ -35,7 +35,7 @@ public class Constants {
     /**
      * Top Logcat logger directory to save log entries.
      */
-    private static final String LOG_RECORD_DIR = "/LogcatViewer/";
+    public static final String LOG_RECORD_DIR = "/LogcatViewer/";
 
     /**
      * Get directory where logs are saved.

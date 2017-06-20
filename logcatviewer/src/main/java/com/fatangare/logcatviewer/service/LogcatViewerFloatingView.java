@@ -1,16 +1,16 @@
 /**
  * Copyright (C) 2016  Sandeep Fatangare <sandeep@fatangare.info>
- *
+ * <p>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -27,6 +27,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
+import android.support.v4.content.FileProvider;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -248,9 +249,10 @@ public class LogcatViewerFloatingView extends StandOutWindow {
 
     /**
      * Setup list view to show logcat log-entries.
+     *
      * @param rootView root view.
      */
-    private void setupLogListView(final View rootView){
+    private void setupLogListView(final View rootView) {
         //Log entry list view
         mListView = (ListView) rootView.findViewById(R.id.list);
         mListView.setStackFromBottom(true);
@@ -261,9 +263,10 @@ public class LogcatViewerFloatingView extends StandOutWindow {
 
     /**
      * Setup bottombar view to show action buttons.
+     *
      * @param rootView root view.
      */
-    private void setupBottomBarView(final View rootView){
+    private void setupBottomBarView(final View rootView) {
         //Pause button
         rootView.findViewById(R.id.pause).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -324,7 +327,7 @@ public class LogcatViewerFloatingView extends StandOutWindow {
                         mRecordsListView.setAdapter(new LogRecordsListAdapter(getApplicationContext()));
                     } else {
                         ((LogRecordsListAdapter) mRecordsListView.getAdapter()).notifyDataSetChanged();
-                }
+                    }
 
                     if (!mRecordsListView.getAdapter().isEmpty()) {
                         mMenuOptionLayout.setVisibility(View.VISIBLE);
@@ -335,7 +338,7 @@ public class LogcatViewerFloatingView extends StandOutWindow {
                     } else {
                         Toast.makeText(getApplicationContext(), "Empty Logs directory! Save logs first.", Toast.LENGTH_LONG).show();
                     }
-            }
+                }
             }
         });
 
@@ -348,7 +351,7 @@ public class LogcatViewerFloatingView extends StandOutWindow {
                 if (filterLayoutVisibility == View.GONE) {
                     mFilterLayout.setVisibility(View.VISIBLE);
                     mMenuOptionLayout.setVisibility(View.VISIBLE);
-            }
+                }
             }
         });
 
@@ -449,11 +452,13 @@ public class LogcatViewerFloatingView extends StandOutWindow {
             }
         });
     }
+
     /**
      * Setup 'Enter filter text' layout.
+     *
      * @param rootView root view.
      */
-    private void setupFilterTextView(final View rootView){
+    private void setupFilterTextView(final View rootView) {
         rootView.findViewById(R.id.btnLogFilter).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -470,7 +475,7 @@ public class LogcatViewerFloatingView extends StandOutWindow {
     /**
      * Setup 'Select priority level' view
      */
-    private  void setupPriorityLevelView(){
+    private void setupPriorityLevelView() {
         mPriorityLevelRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
@@ -527,7 +532,8 @@ public class LogcatViewerFloatingView extends StandOutWindow {
         for (int index = 0; index < cnt; index++) {
             if (checkedItemPositions.valueAt(index)) {
                 File file = (File) logRecordsListAdapter.getItem(checkedItemPositions.keyAt(index));
-                uris.add(Uri.fromFile(file));
+                Uri uri = FileProvider.getUriForFile(this, getPackageName(), file);
+                uris.add(uri);
             }
 
         }
@@ -550,7 +556,7 @@ public class LogcatViewerFloatingView extends StandOutWindow {
      * Delete selected 'Saved Logs' files.
      */
     private void deleteRecordedLogFiles() {
-        if (mListView.getCheckedItemCount() == 0) {
+        if (mRecordsListView.getCheckedItemCount() == 0) {
             Toast.makeText(getApplicationContext(), "First select log entry!", Toast.LENGTH_LONG).show();
             return;
         }
