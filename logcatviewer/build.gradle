@@ -1,4 +1,7 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
+group='com.github.fraynaud33'
+
 android {
     compileSdkVersion 23
     buildToolsVersion '25.0.0'
@@ -14,8 +17,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
-    apply plugin: 'com.github.dcendents.android-maven'
-    group='com.github.fraynaud33'
 }
 dependencies {
     compile project(':standOut')
