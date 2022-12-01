@@ -14,10 +14,22 @@
             </intent-filter>
         </activity>
 
-        <service android:name="com.fatangare.logcatviewer.service.LogcatViewerService"
-            android:label="LogcatLoggerService" android:exported="true"></service>
-        <service android:name="com.fatangare.logcatviewer.service.LogcatViewerFloatingView"
-            android:label="LogcatLoggerFloatingView" > </service>
+        <service
+            android:name="com.fatangare.logcatviewer.service.LogcatViewerService"
+            android:label="LogcatLoggerService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.fatangare.logcatviewer.service.LogcatViewerService" />
+            </intent-filter>
+        </service>
+        <service
+            android:name="com.fatangare.logcatviewer.service.LogcatViewerFloatingView"
+            android:label="LogcatLoggerFloatingView"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.fatangare.logcatviewer.service.LogcatViewerFloatingView" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>
