@@ -15,7 +15,7 @@
         </activity>
 
         <service android:name="com.fatangare.logcatviewer.service.LogcatViewerService"
-            android:label="LogcatLoggerService"></service>
+            android:label="LogcatLoggerService" android:exported="true"></service>
         <service android:name="com.fatangare.logcatviewer.service.LogcatViewerFloatingView"
             android:label="LogcatLoggerFloatingView" > </service>
     </application>
