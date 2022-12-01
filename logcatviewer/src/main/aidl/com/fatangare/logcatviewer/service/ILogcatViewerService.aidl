@@ -17,16 +17,24 @@
 
 package com.fatangare.logcatviewer.service;
 
+import com.fatangare.logcatviewer.service.ILogcatViewerCallback;
+
 /**
  * AIDL for LogcatViewerService service.
  */
 interface ILogcatViewerService {
 
-	/**
+	    /**
          * Change logcat source buffer
          * @param buffer it can be 'main', 'radio', 'events' Check {@link com.fatangare.logcatviewer.utils.Constants} class.
          */
         void changeLogcatSource(String buffer);
+
+	    /**
+         * Set callback to be called with status information and log/updates
+         * @param callback Callback object
+         */
+        void setCallback(ILogcatViewerCallback callback);
 
         /**
          * Restart {@link com.fatangare.logcatviewer.service.LogcatViewerService} service.
