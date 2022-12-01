@@ -24,13 +24,19 @@ import com.fatangare.logcatviewer.service.ILogcatViewerCallback;
  */
 interface ILogcatViewerService {
 
-	    /**
+        /**
          * Change logcat source buffer
-         * @param buffer it can be 'main', 'radio', 'events' Check {@link com.fatangare.logcatviewer.utils.Constants} class.
+         * @param source it can be 'main', 'radio', 'events' Check {@link com.fatangare.logcatviewer.utils.Constants} class.
          */
-        void changeLogcatSource(String buffer);
+        void changeLogcatSource(String source);
 
-	    /**
+        /**
+         * Change logcat filter
+         * @param filter any expression accepted by logcat's '-e' argument
+         */
+        void changeLogcatFilter(String filter);
+
+        /**
          * Set callback to be called with status information and log/updates
          * @param callback Callback object
          */

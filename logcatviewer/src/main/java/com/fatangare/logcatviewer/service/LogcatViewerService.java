@@ -52,6 +52,11 @@ public class LogcatViewerService extends Service {
      */
     private String mLogcatSource = Constants.LOGCAT_SOURCE_BUFFER_MAIN;
 
+    /**
+     * Filter to apply for logcat.
+     */
+    private String mLogcatFilter = null;
+
     //Saving logs to file
     /**
      * File to which logs to be saved.
@@ -182,7 +187,14 @@ public class LogcatViewerService extends Service {
 
         //Execute logcat system command
         try {
-            process = Runtime.getRuntime().exec("/system/bin/logcat -b " + mLogcatSource);
+            String cmd = "/system/bin/logcat";
+            if(mLogcatSource != null) {
+                cmd += " -b " + mLogcatSource;
+            }
+            if(mLogcatFilter != null) {
+                cmd += " -e " + mLogcatFilter;
+            }
+            process = Runtime.getRuntime().exec(cmd);
         } catch (IOException e) {
             sendMessage(MSG_LOGCAT_RUN_FAILURE);
         }
@@ -204,6 +216,10 @@ public class LogcatViewerService extends Service {
 
                 //Read log entry.
                 logEntry = reader.readLine();
+
+                if (logEntry == null) {
+                    continue;
+                }
 
                 //Send log entry to view.
                 sendLogEntry(logEntry);
@@ -338,6 +354,11 @@ public class LogcatViewerService extends Service {
 
         public void changeLogcatSource(String logcatSource) {
             mLogcatSource = logcatSource;
+            restart();
+        }
+
+        public void changeLogcatFilter(String logcatFilter) {
+            mLogcatFilter = logcatFilter;
             restart();
         }
 
