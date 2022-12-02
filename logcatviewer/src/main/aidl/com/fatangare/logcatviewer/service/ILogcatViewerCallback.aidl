@@ -24,5 +24,5 @@ interface ILogcatViewerCallback {
      * Used by LogcatViewerService to send a logcat message
      * @param logEntry log entry from logcat
      */
-     void sendLogEntry(String logEntry);
+    void sendLogEntry(String logEntry);
 }
