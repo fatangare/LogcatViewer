@@ -22,16 +22,20 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.fatangare.logcatviewer.utils.Constants;
+import com.fatangare.logcatviewer.service.ILogcatViewerCallback;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Vector;
 
 
@@ -43,11 +47,22 @@ public class LogcatViewerService extends Service {
 
 
     private static Handler mHandler;
+    private ILogcatViewerCallback mCallback;
 
     /**
      * Logcat source buffer.
      */
     private String mLogcatSource = Constants.LOGCAT_SOURCE_BUFFER_MAIN;
+
+    /**
+     * Filter to apply for logcat.
+     */
+    private String[] mLogcatFilter = null;
+
+    /**
+     * Message filter to apply for logcat.
+     */
+    private String mLogcatMessageFilter = null;
 
     //Saving logs to file
     /**
@@ -70,6 +85,8 @@ public class LogcatViewerService extends Service {
     //Threads
     private volatile boolean mShouldLogcatRunnableBeKilled = false;
     private volatile boolean mIsLogcatRunnableRunning = false;
+
+    Process mProcess = null;
 
     //Status
     /**
@@ -117,6 +134,7 @@ public class LogcatViewerService extends Service {
             runLogcatSubscriber();
             //If reached here, it means thread is killed.
             mIsLogcatRunnableRunning = false;
+            mProcess = null;
             return;
         }
     };
@@ -127,7 +145,7 @@ public class LogcatViewerService extends Service {
             //save log entries
             recordLogData();
             //wait for LOG_SAVING_INTERVAL before next 'record' operation.
-            mHandler.postDelayed(mRecordLogEntryRunnable, LOG_SAVING_INTERVAL);
+            if(mHandler != null) mHandler.postDelayed(mRecordLogEntryRunnable, LOG_SAVING_INTERVAL);
         }
     };
 
@@ -175,11 +193,24 @@ public class LogcatViewerService extends Service {
      * Subscribe logcat to listen logcat log entries.
      */
     private void runLogcatSubscriber() {
-        Process process = null;
 
         //Execute logcat system command
         try {
-            process = Runtime.getRuntime().exec("/system/bin/logcat -b " + mLogcatSource);
+            ArrayList<String> args = new ArrayList<String>();
+            args.add("/system/bin/logcat");
+            if(mLogcatSource != null) {
+                args.add("-b");
+                args.add(mLogcatSource);
+            }
+            if(mLogcatMessageFilter != null) {
+                args.add("-e");
+                args.add(mLogcatMessageFilter);
+            }
+            if(mLogcatFilter != null) {
+                args.addAll(Arrays.asList(mLogcatFilter));
+            }
+            String[] cmdarray = new String[args.size()];
+            mProcess = Runtime.getRuntime().exec(args.toArray(cmdarray));
         } catch (IOException e) {
             sendMessage(MSG_LOGCAT_RUN_FAILURE);
         }
@@ -188,7 +219,7 @@ public class LogcatViewerService extends Service {
         BufferedReader reader = null;
 
         try {
-            reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            reader = new BufferedReader(new InputStreamReader(mProcess.getInputStream()));
 
             String logEntry;
 
@@ -201,6 +232,10 @@ public class LogcatViewerService extends Service {
 
                 //Read log entry.
                 logEntry = reader.readLine();
+
+                if (logEntry == null) {
+                    continue;
+                }
 
                 //Send log entry to view.
                 sendLogEntry(logEntry);
@@ -220,7 +255,7 @@ public class LogcatViewerService extends Service {
             if (mIsRecording) {
                 recordLogData();
 
-                mHandler.removeCallbacks(mRecordLogEntryRunnable);
+                if(mHandler != null) mHandler.removeCallbacks(mRecordLogEntryRunnable);
                 mIsRecording = false;
                 mRecordingData.removeAllElements();
                 mRecordingFilename = null;
@@ -229,7 +264,7 @@ public class LogcatViewerService extends Service {
 
             //Release resources
             reader.close();
-            process.destroy();
+            mProcess.destroy();
 
         } catch (IOException e) {
             //Fail to read logcat log entries
@@ -245,6 +280,7 @@ public class LogcatViewerService extends Service {
      */
     private synchronized void requestToKillLogcatRunnableThread() {
         mShouldLogcatRunnableBeKilled = true;
+        if(mProcess != null) mProcess.destroy();
     }
 
     /**
@@ -260,7 +296,16 @@ public class LogcatViewerService extends Service {
      * @param msg message constant - starting with MSG_
      */
     private void sendMessage(int msg) {
-        Message.obtain(mHandler, msg, "error").sendToTarget();
+        if(mHandler != null) {
+            Message.obtain(mHandler, msg, "error").sendToTarget();
+        }
+        if(mCallback != null) {
+            try {
+                mCallback.sendMessage(msg);
+            } catch(RemoteException e) {
+                Log.d(LOG_TAG, "sendMessage() failed: " + e.toString());
+            }
+        }
     }
 
     /**
@@ -268,7 +313,16 @@ public class LogcatViewerService extends Service {
      * @param logEntry log entry.
      */
     private void sendLogEntry(String logEntry) {
-        Message.obtain(mHandler, MSG_NEW_LOG_ENTRY, logEntry).sendToTarget();
+        if(mHandler != null) {
+            Message.obtain(mHandler, MSG_NEW_LOG_ENTRY, logEntry).sendToTarget();
+        }
+        if(mCallback != null) {
+            try {
+                mCallback.sendLogEntry(logEntry);
+            } catch(RemoteException e) {
+                Log.d(LOG_TAG, "sendLogEntry() failed: " + e.toString());
+            }
+        }
     }
 
     /**
@@ -320,6 +374,20 @@ public class LogcatViewerService extends Service {
             restart();
         }
 
+        public void changeLogcatFilter(String[] filter_spec) {
+            mLogcatFilter = filter_spec.clone();
+            restart();
+        }
+
+        public void changeLogcatMessageFilter(String expression) {
+            mLogcatMessageFilter = expression;
+            restart();
+        }
+
+        public void setCallback(ILogcatViewerCallback callback) {
+            mCallback = callback;
+        }
+
         public void restart() {
             //request to kill thread
             requestToKillLogcatRunnableThread();
@@ -356,11 +424,11 @@ public class LogcatViewerService extends Service {
             mIsRecording = true;
             mRecordingFilename = recordingFilename;
             mFilterText = filterText;
-            mHandler.postDelayed(mRecordLogEntryRunnable, LOG_SAVING_INTERVAL);
+            if(mHandler != null) mHandler.postDelayed(mRecordLogEntryRunnable, LOG_SAVING_INTERVAL);
         }
 
         public void stopRecording() {
-            mHandler.removeCallbacks(mRecordLogEntryRunnable);
+            if(mHandler != null) mHandler.removeCallbacks(mRecordLogEntryRunnable);
             mIsRecording = false;
             recordLogData();
             mRecordingData.removeAllElements();

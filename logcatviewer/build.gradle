@@ -1,11 +1,10 @@
 apply plugin: 'com.android.library'
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.2"
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 22
+        targetSdkVersion 26
     }
 
     buildTypes {
@@ -16,7 +15,7 @@ android {
     }
 }
 dependencies {
-    compile project(':standOut')
+    implementation project(':standOut')
 }
 
 

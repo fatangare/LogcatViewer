@@ -17,16 +17,38 @@
 
 package com.fatangare.logcatviewer.service;
 
+import com.fatangare.logcatviewer.service.ILogcatViewerCallback;
+
 /**
  * AIDL for LogcatViewerService service.
  */
 interface ILogcatViewerService {
 
-	/**
+        /**
          * Change logcat source buffer
-         * @param buffer it can be 'main', 'radio', 'events' Check {@link com.fatangare.logcatviewer.utils.Constants} class.
+         * @param source it can be 'main', 'radio', 'events' Check {@link com.fatangare.logcatviewer.utils.Constants} class.
          */
-        void changeLogcatSource(String buffer);
+        void changeLogcatSource(String source);
+
+        /**
+         * Change logcat filter
+         * @param filter one or more filter expressions accepted by logcat, see
+         * <https://developer.android.com/studio/command-line/logcat#filteringOutput>
+         */
+        void changeLogcatFilter(in String[] filter_spec);
+
+        /**
+         * Change logcat message filter
+         * @param filter any expression accepted by logcat's '-e' argument, see
+         * <https://developer.android.com/studio/command-line/logcat#options>
+         */
+        void changeLogcatMessageFilter(String expression);
+
+        /**
+         * Set callback to be called with status information and log/updates
+         * @param callback Callback object
+         */
+        void setCallback(ILogcatViewerCallback callback);
 
         /**
          * Restart {@link com.fatangare.logcatviewer.service.LogcatViewerService} service.
