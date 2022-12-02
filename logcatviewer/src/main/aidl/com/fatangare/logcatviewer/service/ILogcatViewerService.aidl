@@ -32,9 +32,17 @@ interface ILogcatViewerService {
 
         /**
          * Change logcat filter
-         * @param filter any expression accepted by logcat's '-e' argument
+         * @param filter one or more filter expressions accepted by logcat, see
+         * <https://developer.android.com/studio/command-line/logcat#filteringOutput>
          */
-        void changeLogcatFilter(String filter);
+        void changeLogcatFilter(in String[] filter_spec);
+
+        /**
+         * Change logcat message filter
+         * @param filter any expression accepted by logcat's '-e' argument, see
+         * <https://developer.android.com/studio/command-line/logcat#options>
+         */
+        void changeLogcatMessageFilter(String expression);
 
         /**
          * Set callback to be called with status information and log/updates

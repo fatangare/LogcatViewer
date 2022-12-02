@@ -34,6 +34,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -56,7 +57,12 @@ public class LogcatViewerService extends Service {
     /**
      * Filter to apply for logcat.
      */
-    private String mLogcatFilter = null;
+    private String[] mLogcatFilter = null;
+
+    /**
+     * Message filter to apply for logcat.
+     */
+    private String mLogcatMessageFilter = null;
 
     //Saving logs to file
     /**
@@ -196,9 +202,12 @@ public class LogcatViewerService extends Service {
                 args.add("-b");
                 args.add(mLogcatSource);
             }
-            if(mLogcatFilter != null) {
+            if(mLogcatMessageFilter != null) {
                 args.add("-e");
-                args.add(mLogcatFilter);
+                args.add(mLogcatMessageFilter);
+            }
+            if(mLogcatFilter != null) {
+                args.addAll(Arrays.asList(mLogcatFilter));
             }
             String[] cmdarray = new String[args.size()];
             mProcess = Runtime.getRuntime().exec(args.toArray(cmdarray));
@@ -365,8 +374,13 @@ public class LogcatViewerService extends Service {
             restart();
         }
 
-        public void changeLogcatFilter(String logcatFilter) {
-            mLogcatFilter = logcatFilter;
+        public void changeLogcatFilter(String[] filter_spec) {
+            mLogcatFilter = filter_spec.clone();
+            restart();
+        }
+
+        public void changeLogcatMessageFilter(String expression) {
+            mLogcatMessageFilter = expression;
             restart();
         }
 
