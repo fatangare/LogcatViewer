@@ -34,6 +34,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Vector;
 
 
@@ -78,6 +79,8 @@ public class LogcatViewerService extends Service {
     //Threads
     private volatile boolean mShouldLogcatRunnableBeKilled = false;
     private volatile boolean mIsLogcatRunnableRunning = false;
+
+    Process mProcess = null;
 
     //Status
     /**
@@ -125,6 +128,7 @@ public class LogcatViewerService extends Service {
             runLogcatSubscriber();
             //If reached here, it means thread is killed.
             mIsLogcatRunnableRunning = false;
+            mProcess = null;
             return;
         }
     };
@@ -183,18 +187,21 @@ public class LogcatViewerService extends Service {
      * Subscribe logcat to listen logcat log entries.
      */
     private void runLogcatSubscriber() {
-        Process process = null;
 
         //Execute logcat system command
         try {
-            String cmd = "/system/bin/logcat";
+            ArrayList<String> args = new ArrayList<String>();
+            args.add("/system/bin/logcat");
             if(mLogcatSource != null) {
-                cmd += " -b " + mLogcatSource;
+                args.add("-b");
+                args.add(mLogcatSource);
             }
             if(mLogcatFilter != null) {
-                cmd += " -e " + mLogcatFilter;
+                args.add("-e");
+                args.add(mLogcatFilter);
             }
-            process = Runtime.getRuntime().exec(cmd);
+            String[] cmdarray = new String[args.size()];
+            mProcess = Runtime.getRuntime().exec(args.toArray(cmdarray));
         } catch (IOException e) {
             sendMessage(MSG_LOGCAT_RUN_FAILURE);
         }
@@ -203,7 +210,7 @@ public class LogcatViewerService extends Service {
         BufferedReader reader = null;
 
         try {
-            reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            reader = new BufferedReader(new InputStreamReader(mProcess.getInputStream()));
 
             String logEntry;
 
@@ -248,7 +255,7 @@ public class LogcatViewerService extends Service {
 
             //Release resources
             reader.close();
-            process.destroy();
+            mProcess.destroy();
 
         } catch (IOException e) {
             //Fail to read logcat log entries
@@ -264,6 +271,7 @@ public class LogcatViewerService extends Service {
      */
     private synchronized void requestToKillLogcatRunnableThread() {
         mShouldLogcatRunnableBeKilled = true;
+        if(mProcess != null) mProcess.destroy();
     }
 
     /**
